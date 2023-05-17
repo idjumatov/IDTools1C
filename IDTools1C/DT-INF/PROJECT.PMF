@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Runtime-Version: 8.3.12
+X-External-Script-Variant: English
+X-External-Languages: ru;name="Русский",
+ en;name="Английский"

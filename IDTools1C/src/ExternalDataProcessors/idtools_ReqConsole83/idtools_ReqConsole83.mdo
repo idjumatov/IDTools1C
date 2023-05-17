@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:ExternalDataProcessor xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="1fcd04f1-79ce-463c-b67a-7fa2b0c86f14">
+  <producedTypes>
+    <objectType typeId="9e2cfeb9-df10-48d3-84d1-f9bfdba6e993" valueTypeId="069696aa-99ae-4f0c-acfa-f3087b0b50c8"/>
+  </producedTypes>
+  <name>idtools_ReqConsole83</name>
+  <synonym>
+    <key>en</key>
+    <value>Requests console (IDTools)</value>
+  </synonym>
+  <synonym>
+    <key>ru</key>
+    <value>Консоль запросов (IDTools)</value>
+  </synonym>
+  <containedObjects classId="c3831ec8-d8d5-4f93-8a22-f9bfae07327f" objectId="195ed2c1-f6c7-4815-9b7b-105bb7e20ce5"/>
+  <defaultForm>ExternalDataProcessor.idtools_ReqConsole83.Form.Form</defaultForm>
+  <forms uuid="5399ad5c-e2c6-472f-9ba8-c9c612e321db">
+    <name>Form</name>
+    <synonym>
+      <key>ru</key>
+      <value>Form</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
+</mdclass:ExternalDataProcessor>
