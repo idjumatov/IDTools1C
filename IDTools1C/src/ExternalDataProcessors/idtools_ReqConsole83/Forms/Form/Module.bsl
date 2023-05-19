@@ -101,13 +101,13 @@ Procedure QueryTreeBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Parameter
     EndIf;
     
     If Clone Then
-        DstNode = SrcNode.ПолучитьРодителя();
+        DstNode = SrcNode.GetParent();
         If DstNode=Undefined Then
             DstNode = QueryTree;
         EndIf;
         NewRowID = CopyTreeNode(SrcNode, DstNode);
     Else 
-        NewRow = SrcNode.ПолучитьЭлементы().Add();
+        NewRow = SrcNode.GetItems().Add();
         NewRow["Name"] = DefaultNodeName();
         NewRowID = NewRow.GetID();
     EndIf;
@@ -182,13 +182,13 @@ Procedure QueryTreeParametersParameterDataClearing(Item, StandardProcessing)
         mQueryParametersRow.ParameterData = "";
     Else 
         // Булево всегда очищаем
-        If TypeOf(mQueryParametersRow.ParameterData) = Type("Булево") Then 
+        If TypeOf(mQueryParametersRow.ParameterData) = Type("Boolean") Then 
             mQueryParametersRow.ParameterData = Undefined;
             EnableParameterTypeChoice();
         // Ссылки и другие типы приводим к пустому представлению
         ElsIf ЗначениеЗаполнено(mQueryParametersRow.ParameterData) Then 
             Type = TypeDescrFromValue(mQueryParametersRow.ParameterData);
-            mQueryParametersRow.ParameterData = Type.ПривестиЗначение();
+            mQueryParametersRow.ParameterData = Type.AdjustValue();
         // Пустое представление обнуляем
         Else 
             mQueryParametersRow.ParameterData = Undefined;
@@ -248,7 +248,7 @@ Procedure Generate(Command)
 		Raise "Не реализовано";
 	EndIf;
     
-    If ПустаяСтрока(Text) Then 
+    If IsBlankString(Text) Then 
         ShowMessageBox(, Strings("НеЗаполненТекстЗапроса"));
         Return;
     EndIf;
@@ -330,7 +330,7 @@ Procedure FillParameters(Command)
             EndIf;
             //@skip-check property-return-type
             If Not TypeOf(NewRow.ParameterData) = Type("СписокЗначений") Then
-                NewRow.ParameterData = Type.ПривестиЗначение(NewRow.ParameterData);
+                NewRow.ParameterData = Type.AdjustValue(NewRow.ParameterData);
             EndIf;
             
         EndDo;
@@ -374,16 +374,39 @@ EndProcedure
 &AtServer
 Procedure GenerateAtServer(RowID)
     
-    QueryTreeRow = QueryTree.НайтиПоИдентификатору(RowID);
+    QueryTreeRow = QueryTree.FindByID(RowID);
     If QueryTreeRow = Undefined Then 
         Return;
     EndIf;
     
     QueryText = QueryTreeRow.Text;
-    QueryArgs = QueryTreeRow.Parameters; // FormDataCollection
     
-    //вСохранитьЗапросТекущейСтроки();
     QueryObject = New Query;
+    FillQueryParameters(RowID, QueryObject);
+    QueryObject.Text = StrReplace(QueryText, "|", "");
+    
+    If IsBlankString(QueryObject.Текст) Then
+    	Raise Strings("НеЗаполненТекстЗапроса");
+    EndIf;
+    
+    // TODO: выполнить скрипт до выполнения запроса
+    Result = QueryObject.Execute();
+    // TODO: выполнить скрипт после выполнения запроса
+    
+    ResultTree = Result.Unload(QueryResultIteration.ByGroupsWithHierarchy);
+    UpdateResultTreeAttributes(ResultTree);
+    
+EndProcedure
+
+&AtServer
+Procedure FillQueryParameters(RowID, QueryObject)
+	
+    QueryTreeRow = QueryTree.FindByID(RowID);
+    If QueryTreeRow = Undefined Then 
+        Return;
+    EndIf;
+    
+    QueryArgs = QueryTreeRow.Parameters; // FormDataCollection
     For each ParametersRow In QueryArgs Do
     	
     	ParameterName = Undefined; // String
@@ -414,24 +437,11 @@ Procedure GenerateAtServer(RowID)
         EndIf;
     EndDo;
     
-    QueryObject.Text = СтрЗаменить(QueryText, "|", "");
-    
-    If ПустаяСтрока(QueryObject.Текст) Then
-    	Raise Strings("НеЗаполненТекстЗапроса");
-    EndIf;
-    
-    //// Обработка перед выполнением
-    //СтрокаТЗ = Скрипты.Найти("ТекстОбработкиПередВыполнением", "Name");
-    //If СтрокаТЗ <> Undefined Then
-    //    Выполнить(СтрокаТЗ.Текст);
-    //EndIf;
-    Result = QueryObject.Execute();
-    //// Обработка после выполнения
-    //СтрокаТЗ = Скрипты.Найти("ТекстОбработкиПослеВыполнения", "Name");
-    //If СтрокаТЗ <> Undefined Then
-    //    Выполнить(СтрокаТЗ.Текст);
-    //EndIf;
-    
+EndProcedure
+
+&AtServer
+Procedure UpdateResultTreeAttributes(ValueTree)
+	
     FormResultTree = Items.QueryResult;
     
     ItemsAdd = New Array; // Array of FormAttribute
@@ -447,8 +457,7 @@ Procedure GenerateAtServer(RowID)
         Raise "Не реализовано";
     EndIf;
     
-    ResultTree = Result.Unload(QueryResultIteration.ByGroupsWithHierarchy);
-    For each Column In ResultTree.Columns Do
+    For each Column In ValueTree.Columns Do
         // Создать реквизиты формы
         Types = Column.ValueType.Types(); // Array of TypeDescription
         For i = 0 По Types.UBound() Do
@@ -473,15 +482,16 @@ Procedure GenerateAtServer(RowID)
     Item.Type = FormGroupType.ColumnGroup;
     Item.Group = ColumnsGroup.Horizontal;
     Item.FixingInTable = FixingInTable.Left;
-    For each Column In ResultTree.Columns Do
+    For each Column In ValueTree.Columns Do
         ColumnName = UniqueColumnName(FormResultTree.Name + Column.Name);
         Item2 = Items.Add(ColumnName, Type("FormField"), Items[FormGroupName]);
         Item2.Type = FormFieldType.InputField;
+//        Item2.ReadOnly = True;
         Item2.DataPath = FormResultTree.DataPath + "." + Column.Name;
     EndDo;
     // Вывести данные в таблицу
-    ValueToFormAttribute(ResultTree, FormResultTree.DataPath);
-    
+    ValueToFormAttribute(ValueTree, FormResultTree.DataPath);
+	
 EndProcedure
 
 // Save before exit.
@@ -544,11 +554,11 @@ Function FromJSON(Val JSONString)
 EndFunction
 
 &AtServerNoContext
-Function UniqueColumnName(Префикс = "")
+Function UniqueColumnName(Prefix = "")
     
-    ИмяКолонки = Префикс + New УникальныйИдентификатор;
-    ИмяКолонки = СтрЗаменить(ИмяКолонки, "-", "");
-    Return ИмяКолонки;
+    ColName = Prefix + New UUID;
+    ColName = StrReplace(ColName, "-", "");
+    Return ColName;
     
 EndFunction
 
@@ -558,17 +568,17 @@ Function DefaultNodeName()
 EndFunction
 
 &AtClientAtServerNoContext
-Function Strings(Знач Ключ)
+Function Strings(Val Key)
     
-    мТекстСообщения = New Соответствие;
-    мТекстСообщения.Вставить("НеРеализовано", "Не реализовано.");
-    мТекстСообщения.Вставить("НеЗаполненТекстЗапроса", "Отсутствует текст запроса.");
-    мТекстСообщения.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
-    мТекстСообщения.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
+    Strings = New Map;
+    Strings.Вставить("НеРеализовано", "Не реализовано.");
+    Strings.Вставить("НеЗаполненТекстЗапроса", "Отсутствует текст запроса.");
+    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
+    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
     
-    Текст = мТекстСообщения.Получить(Ключ);
-    If Текст <> Undefined Then 
-        Return Текст;
+    Text = Strings.Get(Key);
+    If Text <> Undefined Then 
+        Return Text;
     EndIf;
     
     Return "";
@@ -613,6 +623,10 @@ EndFunction
 
 #Region OpenQueriesFile
 
+// Restore queries tree.
+// 
+// Parameters:
+//  Address - String - Адрес временного файла
 &AtServer
 Procedure RestoreQueriesTree(Address)
     
@@ -630,7 +644,7 @@ Procedure RestoreQueriesTree(Address)
     // Для обратной совместимости в дереве из файла удалим колонки которых нету в дереве на форме
     Tree = FormAttributeToValue("QueryTree");
     For each Column In QueryTreeFromFile.Columns Do
-        If Tree.Колонки.Найти(Column.Name) = Undefined Then 
+        If Tree.Columns.Find(Column.Name) = Undefined Then 
             QueryTreeFromFile.Columns.Delete(Column);
         EndIf;
     EndDo;
@@ -645,10 +659,10 @@ EndProcedure
 // Open from file processing.
 // 
 // Parameters:
-//  Exist - Boolean - Exist
+//  Exists - Boolean - Exists
 //  File - File - File
 &AtClient
-Procedure OpenFromFileProcessing(Exist, File) Export 
+Procedure OpenFromFileProcessing(Exists, File) Export 
     
     Data = New BinaryData(File.FullName);
     Address = PutToTempStorage(Data, UUID);
@@ -672,10 +686,6 @@ Procedure OpenQueriesFileDialog(Files, Params) Export
             File.BeginCheckingExistence(Ttip);
             
         EndDo;
-        
-    Else 
-        
-        ShowMessageBox(, "Файл(ы) не выбран(ы).");
         
     EndIf;
 EndProcedure
