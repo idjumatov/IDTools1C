@@ -92,7 +92,7 @@ EndProcedure
 
 &AtClient
 Procedure QueryTreeBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Parameter)
-	
+    
     Cancel = Истина;
     
     SrcNode = Items.QueryTree.CurrentData; // FormDataTree, FormDataTreeItem
@@ -161,7 +161,7 @@ Procedure QueryTreeParametersParameterDataOnChange(Item)
     
     Value = Undefined;
     If Not mQueryParametersRow.Property("ParameterData", Value) Then
-    	Raise "Не реализовано";
+        Raise Strings("НеРеализовано");
     EndIf;
     
     If TypeOf(Value) = Type("ValueList") Then 
@@ -237,16 +237,16 @@ EndProcedure
 
 &AtClient
 Procedure Generate(Command)
-	
+    
     If mQueryTreeRow = Undefined Then 
         ShowMessageBox(, Strings("НеВыбранЗапросВДереве"));
         Return;
     EndIf;
     
     Text = "";
-	If Not mQueryTreeRow.Property("Text", Text) Then
-		Raise "Не реализовано";
-	EndIf;
+    If Not mQueryTreeRow.Property("Text", Text) Then
+        Raise Strings("НеРеализовано");
+    EndIf;
     
     If IsBlankString(Text) Then 
         ShowMessageBox(, Strings("НеЗаполненТекстЗапроса"));
@@ -259,23 +259,40 @@ EndProcedure
 
 &AtClient
 Procedure NewQueriesFile(Command)
-	//TODO: Insert the handler content
+    //TODO: Insert the handler content
 EndProcedure
 
 &AtClient
 Procedure OpenQueriesFile(Command)
     
-    Mode  = FileDialogMode.Open; // FileDialogMode
-    Dialog = New FileDialog(Mode);
-    Dialog.FullFileName = "";
-    Dialog.Directory = "";
-    Dialog.Title = "Выберите файл со списком запросов";
-    Dialog.Filter = NStr("en = 'Queries file';ru = 'Файлы запросов'") + " (*.sel)|*.sel" + "|" + 
-				    NStr("en = 'All files';ru = 'Все файлы'") + " (*.*)|*.*";
-    Dialog.DefaultExt = "sel";
+    DialogTitle = "Выберите файл со списком запросов";
+    DialogFilter = NStr("en = 'Queries file';ru = 'Файлы запросов'") + " (*.sel)|*.sel" + "|" + 
+                   NStr("en = 'All files';ru = 'Все файлы'") + " (*.*)|*.*";
     
-    Clbk = New NotifyDescription("OpenQueriesFileDialog", ThisObject);
-    BeginPuttingFiles(Clbk,, Dialog);
+    If VersionIsLessThan("8.3.15") Then
+        Code = "
+        |Clbk = New NotifyDescription(""OpenQueriesFileDialog831"", ThisObject);
+        |Dialog = New FileDialog(FileDialogMode.Open);
+        |Dialog.Title = DialogTitle;
+        |Dialog.Filter = DialogFilter;
+        |Dialog.DefaultExt = ""sel"";
+        |BeginPuttingFiles(Clbk,, Dialog); // Не рекомендуется использовать, начиная с версии 8.3.15.
+        |";
+    Else
+        Code = "
+        |Dialog = New PutFilesDialogParameters;
+        |Dialog.Title = DialogTitle;
+        |Dialog.МножественныйВыбор = False;
+        |Dialog.Filter = DialogFilter;
+        |Clbk = New NotifyDescription(""OpenQueriesFileDialog835"", ThisObject);
+        |BeginPutFilesToServer(Clbk,,,Dialog);
+        |";
+    EndIf;
+#If WebClient Then
+    Raise Strings("НеРеализовано");
+#Else
+    Execute(Code);
+#EndIf
     
 EndProcedure
 
@@ -287,14 +304,14 @@ EndProcedure
 
 &AtClient
 Procedure FillParameters(Command)
-	
+    
     If mQueryTreeRow = Undefined Then 
         Return;
     EndIf;
     
     Text = Undefined; // String
     If Not mQueryTreeRow.Property("Text", Text) Then
-    	Raise "Не реализовано";
+        Raise Strings("НеРеализовано");
     EndIf;
     
     If IsBlankString(Text) Then
@@ -304,7 +321,7 @@ Procedure FillParameters(Command)
     
     Params = Undefined; // ValueTable
     If Not mQueryTreeRow.Property("Parameters", Params) Then
-    	Raise "Не реализовано";
+        Raise Strings("НеРеализовано");
     EndIf;
     ParamsFromQuery = FillParametersAtServer(Text);
     If TypeOf(ParamsFromQuery) = Type("String") Then 
@@ -362,159 +379,110 @@ Procedure ParamsFromStringInternal(Command)
     
 EndProcedure
 
+&AtClient
+Procedure EditQuery(Command)
+    
+    #If NOT ThickClientManagedApplication Then
+    If VersionIsLessThan("8.3.5.1068") Then
+        ShowMessageBox(, Strings("КонструкторЗапросаНеПоддерживается"));
+        Return;
+    EndIf;
+    #EndIf
+    
+    Text = "";
+    If Not mQueryTreeRow.Property("Text", Text) Then
+        Raise Strings("НеРеализовано");
+    EndIf;
+    
+    Text = TrimAll(Text);
+    QWiz = Новый QueryWizard;
+    If Not IsBlankString(Text) Then
+        QWiz.Text = Text;
+    EndIf;
+
+#If ThickClientManagedApplication Then
+    QWiz.AutoAppendPresentations = False;
+    QWiz.DataCompositionMode = False;
+    Если QWiz.DoModal() Тогда
+        //@skip-check property-return-type
+        mQueryTreeRow.Text = QWiz.Text;
+    КонецЕсли;
+#Else
+    Clbk = New NotifyDescription("AfterEditingQuery", ThisObject, mQueryTreeRow);
+    QWiz.Show(Clbk);
+#EndIf
+
+EndProcedure
+
 #EndRegion
 
 #Region Private
 
-// Сформировать на сервере.
+#Region Misc
+
+&AtServerNoContext
+Function VersionIsLessThan(Val Version)
+    
+    Result = CompareToCurrentVersion(Version);
+    Return ?(Result = -1, Истина, Ложь);
+    
+EndFunction
+
+&AtServerNoContext
+Function CompareToCurrentVersion(Version)
+
+    MinimumVersionDigits = StringToArray(Version);
+    
+    SystemInfo = Новый SystemInfo;
+    CurrentVersion = SystemInfo.AppVersion;    
+    CurrentVersionDigits = StringToArray(CurrentVersion);
+
+    Для i = 0 По 3 Цикл
+        
+        If Number(CurrentVersionDigits[i]) = Number(MinimumVersionDigits[i]) Then
+            Result = 0; 
+        ElsIf Number(CurrentVersionDigits[i]) > Number(MinimumVersionDigits[i]) Then
+            Result = 1; 
+            Break;
+        ElsIf Number(CurrentVersionDigits[i]) < Number(MinimumVersionDigits[i]) Then
+            Result = -1;
+            Break;
+        EndIf; 
+        
+    EndDo; 
+    
+    Return Result;
+
+EndFunction
+
+// String to array.
 // 
 // Parameters:
-//  RowID - Число - Идентификатор строки в дереве запросов
+//  Str - String - Str
+//  Separator - String - Separator
 // 
-&AtServer
-Procedure GenerateAtServer(RowID)
-    
-    QueryTreeRow = QueryTree.FindByID(RowID);
-    If QueryTreeRow = Undefined Then 
-        Return;
-    EndIf;
-    
-    QueryText = QueryTreeRow.Text;
-    
-    QueryObject = New Query;
-    FillQueryParameters(RowID, QueryObject);
-    QueryObject.Text = StrReplace(QueryText, "|", "");
-    
-    If IsBlankString(QueryObject.Текст) Then
-    	Raise Strings("НеЗаполненТекстЗапроса");
-    EndIf;
-    
-    // TODO: выполнить скрипт до выполнения запроса
-    Result = QueryObject.Execute();
-    // TODO: выполнить скрипт после выполнения запроса
-    
-    ResultTree = Result.Unload(QueryResultIteration.ByGroupsWithHierarchy);
-    UpdateResultTreeAttributes(ResultTree);
-    
-EndProcedure
+// Returns:
+//  Array of String - Separated by Separator
+&AtServerNoContext
+Function StringToArray(Str, Separator = ".")
 
-&AtServer
-Procedure FillQueryParameters(RowID, QueryObject)
-	
-    QueryTreeRow = QueryTree.FindByID(RowID);
-    If QueryTreeRow = Undefined Then 
-        Return;
+    Array = New Array;
+    
+    i = Find(Str, Separator);    
+    While i > 0 Do
+        Array.Add(Left(Str, i-1));
+        Str = Mid(Str, i+1);
+        i = Find(Str, Separator);
+    EndDo;
+        
+    If StrLen(Str) > 0 Then
+        Array.Add(Str);
     EndIf;
     
-    QueryArgs = QueryTreeRow.Parameters; // FormDataCollection
-    For each ParametersRow In QueryArgs Do
-    	
-    	ParameterName = Undefined; // String
-    	ParameterType = Undefined; // Number
-    	ParameterData = Undefined;
-    	
-    	If Not ParametersRow.Property("ParameterName", ParameterName) Then
-    		Raise "Не реализовано";
-    	EndIf;
-    	If Not ParametersRow.Property("ParameterType", ParameterType) Then
-    		Raise "Не реализовано";
-    	EndIf;
-    	If Not ParametersRow.Property("ParameterData", ParameterData) Then
-    		Raise "Не реализовано";
-    	EndIf;
-    	
-        If ParameterType = 2 Then
-        	If TypeOf(ParameterData) = Type("String") Then
-	        	SafeMode = SafeMode();
-	        	SetSafeMode(True);
-	            QueryObject.SetParameter(ParameterName, Eval(ParameterData));
-	        	SetSafeMode(SafeMode);
-        	Else
-        		Raise "Не корректно установлен параметр.";
-        	EndIf;
-        Else
-            QueryObject.SetParameter(ParameterName, ParameterData);
-        EndIf;
-    EndDo;
+    Return Array;
     
-EndProcedure
 
-&AtServer
-Procedure UpdateResultTreeAttributes(ValueTree)
-	
-    FormResultTree = Items.QueryResult;
-    
-    ItemsAdd = New Array; // Array of FormAttribute
-    ItemsDel = New Array; // Array of String
-    
-    // Удаление колонок результата с формы
-    Data = FormAttributeToValue(FormResultTree.DataPath);
-    If TypeOf(Data) = Type("ValueTree") Then 
-        For each Column In Data.Columns Do
-            ItemsDel.Add(FormResultTree.DataPath + "." + Column.Name);
-        EndDo;
-    Else 
-        Raise "Не реализовано";
-    EndIf;
-    
-    For each Column In ValueTree.Columns Do
-        // Создать реквизиты формы
-        Types = Column.ValueType.Types(); // Array of TypeDescription
-        For i = 0 По Types.UBound() Do
-            If Types[i] = Type("PointInTime") Then
-                Types[i] = New TypeDescription("Date",,, New DateQualifiers(DateFractions.DateTime));
-            ElsIf Types[i] = Type("Type") Then
-                Types[i] = New TypeDescription("String",,New StringQualifiers(150),);
-            EndIf;
-        EndDo;
-        Type = New TypeDescription(Types);
-        ItemsAdd.Add(New FormAttribute(Column.Name, Type, FormResultTree.DataPath));
-    EndDo;
-    // добавляем реквизит в форму (невидимая часть, справа в редакторе форм)
-    FormGroupName = FormResultTree.Name + "Group1";
-    Item = Items.Find(FormGroupName);
-    If Item <> Undefined Then 
-        Items.Delete(Item);
-    EndIf;
-    ChangeAttributes(ItemsAdd, ItemsDel);
-    // Вывести реквизиты на форму
-    Item = Items.Add(FormGroupName, Type("FormGroup"), Items[FormResultTree.Name]);
-    Item.Type = FormGroupType.ColumnGroup;
-    Item.Group = ColumnsGroup.Horizontal;
-    Item.FixingInTable = FixingInTable.Left;
-    For each Column In ValueTree.Columns Do
-        ColumnName = UniqueColumnName(FormResultTree.Name + Column.Name);
-        Item2 = Items.Add(ColumnName, Type("FormField"), Items[FormGroupName]);
-        Item2.Type = FormFieldType.InputField;
-//        Item2.ReadOnly = True;
-        Item2.DataPath = FormResultTree.DataPath + "." + Column.Name;
-    EndDo;
-    // Вывести данные в таблицу
-    ValueToFormAttribute(ValueTree, FormResultTree.DataPath);
-	
-EndProcedure
-
-// Save before exit.
-// 
-// Parameters:
-//  Result - DialogReturnCode - Result
-//  Parameters - Undefined - Parameters
-&AtClient
-Procedure SaveBeforeExit(Result, Parameters) Export
-    If Result = DialogReturnCode.No Then
-        Modified = Ложь;
-        Закрыть();
-        Return;
-    ElsIf Result = DialogReturnCode.Cancel Then
-        Return;
-    EndIf;
-    // TODO: реализовать сохранение
-    #If WebClient Then
-        // Скачать файл
-    #Else
-        // If файл уже выбран, то сохранить его
-    #EndIf
-EndProcedure
+EndFunction
 
 // To JSON.
 // 
@@ -553,6 +521,160 @@ Function FromJSON(Val JSONString)
     
 EndFunction
 
+#EndRegion
+
+#Region PrivateFormHandlers
+
+// Сформировать на сервере.
+// 
+// Parameters:
+//  RowID - Число - Идентификатор строки в дереве запросов
+// 
+&AtServer
+Procedure GenerateAtServer(RowID)
+    
+    QueryTreeRow = QueryTree.FindByID(RowID);
+    If QueryTreeRow = Undefined Then 
+        Return;
+    EndIf;
+    
+    QueryText = QueryTreeRow.Text;
+    
+    QueryObject = New Query;
+    FillQueryParameters(RowID, QueryObject);
+    QueryObject.Text = StrReplace(QueryText, "|", "");
+    
+    If IsBlankString(QueryObject.Текст) Then
+        Raise Strings("НеЗаполненТекстЗапроса");
+    EndIf;
+    
+    // TODO: выполнить скрипт до выполнения запроса
+    Result = QueryObject.Execute();
+    // TODO: выполнить скрипт после выполнения запроса
+    
+    ResultTree = Result.Unload(QueryResultIteration.ByGroupsWithHierarchy);
+    UpdateResultTreeAttributes(ResultTree);
+    
+EndProcedure
+
+&AtServer
+Procedure FillQueryParameters(RowID, QueryObject)
+    
+    QueryTreeRow = QueryTree.FindByID(RowID);
+    If QueryTreeRow = Undefined Then 
+        Return;
+    EndIf;
+    
+    QueryArgs = QueryTreeRow.Parameters; // FormDataCollection
+    For each ParametersRow In QueryArgs Do
+        
+        ParameterName = Undefined; // String
+        ParameterType = Undefined; // Number
+        ParameterData = Undefined;
+        
+        If Not ParametersRow.Property("ParameterName", ParameterName) Then
+            Raise Strings("НеРеализовано");
+        EndIf;
+        If Not ParametersRow.Property("ParameterType", ParameterType) Then
+            Raise Strings("НеРеализовано");
+        EndIf;
+        If Not ParametersRow.Property("ParameterData", ParameterData) Then
+            Raise Strings("НеРеализовано");
+        EndIf;
+        
+        If ParameterType = 2 Then
+            If TypeOf(ParameterData) = Type("String") Then
+                SafeMode = SafeMode();
+                SetSafeMode(True);
+                QueryObject.SetParameter(ParameterName, Eval(ParameterData));
+                SetSafeMode(SafeMode);
+            Else
+                Raise "Не корректно установлен параметр.";
+            EndIf;
+        Else
+            QueryObject.SetParameter(ParameterName, ParameterData);
+        EndIf;
+    EndDo;
+    
+EndProcedure
+
+&AtServer
+Procedure UpdateResultTreeAttributes(ValueTree)
+    
+    FormResultTree = Items.QueryResult;
+    
+    ItemsAdd = New Array; // Array of FormAttribute
+    ItemsDel = New Array; // Array of String
+    
+    // Удаление колонок результата с формы
+    Data = FormAttributeToValue(FormResultTree.DataPath);
+    If TypeOf(Data) = Type("ValueTree") Then 
+        For each Column In Data.Columns Do
+            ItemsDel.Add(FormResultTree.DataPath + "." + Column.Name);
+        EndDo;
+    Else 
+        Raise Strings("НеРеализовано");
+    EndIf;
+    
+    For each Column In ValueTree.Columns Do
+        // Создать реквизиты формы
+        Types = Column.ValueType.Types(); // Array of TypeDescription
+        For i = 0 По Types.UBound() Do
+            If Types[i] = Type("PointInTime") Then
+                Types[i] = New TypeDescription("Date",,, New DateQualifiers(DateFractions.DateTime));
+            ElsIf Types[i] = Type("Type") Then
+                Types[i] = New TypeDescription("String",,New StringQualifiers(150),);
+            EndIf;
+        EndDo;
+        Type = New TypeDescription(Types);
+        ItemsAdd.Add(New FormAttribute(Column.Name, Type, FormResultTree.DataPath));
+    EndDo;
+    // добавляем реквизит в форму (невидимая часть, справа в редакторе форм)
+    FormGroupName = FormResultTree.Name + "Group1";
+    Item = Items.Find(FormGroupName);
+    If Item <> Undefined Then 
+        Items.Delete(Item);
+    EndIf;
+    ChangeAttributes(ItemsAdd, ItemsDel);
+    // Вывести реквизиты на форму
+    Item = Items.Add(FormGroupName, Type("FormGroup"), Items[FormResultTree.Name]);
+    Item.Type = FormGroupType.ColumnGroup;
+    Item.Group = ColumnsGroup.Horizontal;
+    Item.FixingInTable = FixingInTable.Left;
+    For each Column In ValueTree.Columns Do
+        ColumnName = UniqueColumnName(FormResultTree.Name + Column.Name);
+        Item2 = Items.Add(ColumnName, Type("FormField"), Items[FormGroupName]);
+        Item2.Type = FormFieldType.InputField;
+//        Item2.ReadOnly = True;
+        Item2.DataPath = FormResultTree.DataPath + "." + Column.Name;
+    EndDo;
+    // Вывести данные в таблицу
+    ValueToFormAttribute(ValueTree, FormResultTree.DataPath);
+    
+EndProcedure
+
+// Save before exit.
+// 
+// Parameters:
+//  Result - DialogReturnCode - Result
+//  Parameters - Undefined - Parameters
+&AtClient
+Procedure SaveBeforeExit(Result, Parameters) Export
+    If Result = DialogReturnCode.No Then
+        Modified = Ложь;
+        Закрыть();
+        Return;
+    ElsIf Result = DialogReturnCode.Cancel Then
+        Return;
+    EndIf;
+    // TODO: реализовать сохранение
+    #If WebClient Then
+        // Скачать файл
+    #Else
+        // If файл уже выбран, то сохранить его
+    #EndIf
+EndProcedure
+
 &AtServerNoContext
 Function UniqueColumnName(Prefix = "")
     
@@ -575,6 +697,7 @@ Function Strings(Val Key)
     Strings.Вставить("НеЗаполненТекстЗапроса", "Отсутствует текст запроса.");
     Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
     Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
+    Strings.Вставить("КонструкторЗапросаНеПоддерживается", "Текущая версия платформы 1С:Предприятие не поддерживает запуск конструктора запросов.");
     
     Text = Strings.Get(Key);
     If Text <> Undefined Then 
@@ -620,6 +743,21 @@ Function CopyTreeNode(Src, Dst)
     
 EndFunction
 
+// After editing query.
+// 
+// Parameters:
+//  Text - String
+//  TreeItem - FormDataTreeItem
+//@skip-check property-return-type
+&AtClient
+Procedure AfterEditingQuery(Text, TreeItem) Экспорт
+    If Text = Undefined Then
+        Return;
+    EndIf;
+    TreeItem.Text = Text;
+EndProcedure
+
+#EndRegion
 
 #Region OpenQueriesFile
 
@@ -656,38 +794,40 @@ Procedure RestoreQueriesTree(Address)
     
 EndProcedure
 
-// Open from file processing.
+// Open queries file dialog.
 // 
 // Parameters:
-//  Exists - Boolean - Exists
-//  File - File - File
+//  Files - Array of TransferredFileDescription - Files
+//  Params - Undefined - Params
 &AtClient
-Procedure OpenFromFileProcessing(Exists, File) Export 
-    
-    Data = New BinaryData(File.FullName);
-    Address = PutToTempStorage(Data, UUID);
-    RestoreQueriesTree(Address);
-    
+Procedure OpenQueriesFileDialog831(Files, Params) Export 
+    If Files = Undefined Then 
+        Return;
+    EndIf;
+    For Each SelectedFileDescription In Files Do 
+        //@skip-warning
+        Address = SelectedFileDescription.Location;
+        //@skip-warning
+        RestoreQueriesTree(Address);
+    EndDo;
 EndProcedure
 
 // Open queries file dialog.
 // 
 // Parameters:
-//  Files - Array of File - Files
+//  Files - Array of PlacedFileDescription - Files
 //  Params - Undefined - Params
 &AtClient
-Procedure OpenQueriesFileDialog(Files, Params) Export 
-    If Files <> Undefined Then 
-        
-        Для Каждого SelectedFileDescription In Files Do 
-            
-            File = New File(SelectedFileDescription.Name);
-            Ttip = New NotifyDescription("OpenFromFileProcessing", ThisObject, File);
-            File.BeginCheckingExistence(Ttip);
-            
-        EndDo;
-        
+Procedure OpenQueriesFileDialog835(Files, Params) Export 
+    If Files = Undefined Then 
+        Return;
     EndIf;
+    For Each SelectedFileDescription In Files Do 
+        //@skip-warning
+        Address = SelectedFileDescription.Address;
+        //@skip-warning
+        RestoreQueriesTree(Address);
+    EndDo;
 EndProcedure
 
 #EndRegion
@@ -767,7 +907,7 @@ Procedure AfterChoiceFromMenu(Result, Parameters) Export
         Type = TypeDescrFromValue(Value);
         mQueryParametersRow.ParameterData = Type.AdjustValue(mQueryParametersRow.ParameterData);
     Else 
-        Raise "Не реализовано";
+        Raise Strings("НеРеализовано");
     EndIf;
     
 EndProcedure
