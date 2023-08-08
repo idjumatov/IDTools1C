@@ -68,6 +68,161 @@
       <autoCommandBar>
         <name>QueryTreeCommandBar</name>
         <id>3</id>
+        <items xsi:type="form:Button">
+          <name>QueryTreeAdd</name>
+          <id>185</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>QueryTreeAddExtendedTooltip</name>
+            <id>186</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <commandName>Form.Item.QueryTree.StandardCommand.Add</commandName>
+          <representation>Picture</representation>
+          <onlyInAllActions>false</onlyInAllActions>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
+        <items xsi:type="form:Button">
+          <name>QueryTreeCopy</name>
+          <id>187</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>QueryTreeCopyExtendedTooltip</name>
+            <id>188</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <commandName>Form.Item.QueryTree.StandardCommand.Copy</commandName>
+          <representation>Picture</representation>
+          <onlyInAllActions>false</onlyInAllActions>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
+        <items xsi:type="form:Button">
+          <name>QueryTreeDelete</name>
+          <id>193</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>QueryTreeDeleteExtendedTooltip</name>
+            <id>194</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <commandName>Form.Item.QueryTree.StandardCommand.Delete</commandName>
+          <representation>Picture</representation>
+          <onlyInAllActions>false</onlyInAllActions>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
+        <items xsi:type="form:Button">
+          <name>QueryTreeMoveUp</name>
+          <id>189</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>QueryTreeMoveUpExtendedTooltip</name>
+            <id>190</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <commandName>Form.Item.QueryTree.StandardCommand.MoveUp</commandName>
+          <representation>Picture</representation>
+          <onlyInAllActions>false</onlyInAllActions>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
+        <items xsi:type="form:Button">
+          <name>QueryTreeMoveDown</name>
+          <id>191</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>QueryTreeMoveDownExtendedTooltip</name>
+            <id>192</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <commandName>Form.Item.QueryTree.StandardCommand.MoveDown</commandName>
+          <representation>Picture</representation>
+          <onlyInAllActions>false</onlyInAllActions>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
@@ -489,16 +644,16 @@
           <name>QueryParametersCommandBar</name>
           <id>89</id>
           <items xsi:type="form:Button">
-            <name>QueryParametersFillParameters</name>
-            <id>159</id>
+            <name>QueryParametersAdd</name>
+            <id>195</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>QueryParametersFillParametersExtendedTooltip</name>
-              <id>160</id>
+              <name>QueryParametersAddExtendedTooltip</name>
+              <id>196</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
@@ -511,24 +666,25 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.FillParameters</commandName>
-            <representation>Auto</representation>
+            <commandName>Form.Item.QueryParameters.StandardCommand.Add</commandName>
+            <representation>Picture</representation>
+            <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
             <placementArea>UserCmds</placementArea>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>QueryParametersParamsFromStringInternal</name>
-            <id>161</id>
+            <name>QueryParametersCopy</name>
+            <id>197</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>QueryParametersParamsFromStringInternalExtendedTooltip</name>
-              <id>162</id>
+              <name>QueryParametersCopyExtendedTooltip</name>
+              <id>198</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
@@ -541,12 +697,199 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.ParamsFromStringInternal</commandName>
-            <representation>Auto</representation>
+            <commandName>Form.Item.QueryParameters.StandardCommand.Copy</commandName>
+            <representation>Picture</representation>
+            <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
             <placementArea>UserCmds</placementArea>
             <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryParametersDelete</name>
+            <id>199</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryParametersDeleteExtendedTooltip</name>
+              <id>200</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Item.QueryParameters.StandardCommand.Delete</commandName>
+            <representation>Picture</representation>
+            <onlyInAllActions>false</onlyInAllActions>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryParametersMoveUp</name>
+            <id>201</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryParametersMoveUpExtendedTooltip</name>
+              <id>202</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Item.QueryParameters.StandardCommand.MoveUp</commandName>
+            <representation>Picture</representation>
+            <onlyInAllActions>false</onlyInAllActions>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryParametersMoveDown</name>
+            <id>203</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryParametersMoveDownExtendedTooltip</name>
+              <id>204</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Item.QueryParameters.StandardCommand.MoveDown</commandName>
+            <representation>Picture</representation>
+            <onlyInAllActions>false</onlyInAllActions>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:FormGroup">
+            <name>QueryParametersGroupGlobalShortcuts</name>
+            <id>211</id>
+            <items xsi:type="form:Button">
+              <name>QueryParametersFillParameters</name>
+              <id>159</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <extendedTooltip>
+                <name>QueryParametersFillParametersExtendedTooltip</name>
+                <id>160</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <commandName>Form.Command.FillParameters</commandName>
+              <representation>Auto</representation>
+              <onlyInAllActions>false</onlyInAllActions>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <placementArea>UserCmds</placementArea>
+              <representationInContextMenu>Auto</representationInContextMenu>
+            </items>
+            <items xsi:type="form:Button">
+              <name>QueryParametersParamsFromStringInternal</name>
+              <id>161</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <extendedTooltip>
+                <name>QueryParametersParamsFromStringInternalExtendedTooltip</name>
+                <id>162</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <commandName>Form.Command.ParamsFromStringInternal</commandName>
+              <representation>Auto</representation>
+              <onlyInAllActions>false</onlyInAllActions>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <placementArea>UserCmds</placementArea>
+              <representationInContextMenu>Auto</representationInContextMenu>
+            </items>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <title>
+              <key>en</key>
+              <value>Query parameters group global shortcuts</value>
+            </title>
+            <extendedTooltip>
+              <name>QueryParametersGroupGlobalShortcutsExtendedTooltip</name>
+              <id>212</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <extInfo xsi:type="form:ButtonGroupExtInfo">
+              <commandSource>FormCommandPanelGlobalCommands</commandSource>
+            </extInfo>
           </items>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1391,6 +1734,7 @@
       <common>true</common>
     </userVisible>
     <horizontalAlign>Left</horizontalAlign>
+    <autoFill>true</autoFill>
   </autoCommandBar>
   <handlers>
     <event>BeforeClose</event>
@@ -1413,7 +1757,7 @@
     <name>Object</name>
     <id>1</id>
     <valueType>
-      <types>ExternalDataProcessorObject.idtools_ReqConsole83</types>
+      <types>ExternalDataProcessor.idtools_ReqConsole83</types>
     </valueType>
     <view>
       <common>true</common>
@@ -1580,7 +1924,8 @@
           <types>Number</types>
           <types>AnyRef</types>
           <numberQualifiers>
-            <precision>10</precision>
+            <precision>18</precision>
+            <scale>6</scale>
           </numberQualifiers>
           <stringQualifiers/>
           <dateQualifiers/>
@@ -1659,6 +2004,7 @@
     <use>
       <common>true</common>
     </use>
+    <shortcut>Ctrl+P</shortcut>
     <picture xsi:type="core:PictureRef">
       <picture>StdPicture.Dimension</picture>
     </picture>
@@ -1804,6 +2150,7 @@
     <use>
       <common>true</common>
     </use>
+    <shortcut>Ctrl+Alt+P</shortcut>
     <picture xsi:type="core:PictureRef">
       <picture>StdPicture.QueryWizardCreateNestedQuery</picture>
     </picture>
