@@ -324,10 +324,7 @@ Procedure FillParameters(Command)
         Raise Strings("НеРеализовано");
     EndIf;
     ParamsFromQuery = FillParametersAtServer(Text);
-    If TypeOf(ParamsFromQuery) = Type("String") Then 
-        ShowMessageBox(,ParamsFromQuery);
-        Return;
-    ElsIf TypeOf(ParamsFromQuery) = Type("Structure") Then 
+    If TypeOf(ParamsFromQuery) = Type("Structure") Then 
         
         For each Item In ParamsFromQuery Do
             
@@ -352,7 +349,7 @@ Procedure FillParameters(Command)
             
         EndDo;
         
-        //Модифицированность = Истина;
+        //Modified = True;
         
     Else 
         ShowMessageBox(,Strings("НеРеализовано"));
@@ -395,7 +392,7 @@ Procedure EditQuery(Command)
     EndIf;
     
     Text = TrimAll(Text);
-    QWiz = Новый QueryWizard;
+    QWiz = New QueryWizard;
     If Not IsBlankString(Text) Then
         QWiz.Text = Text;
     EndIf;
@@ -433,7 +430,7 @@ Function CompareToCurrentVersion(Version)
 
     MinimumVersionDigits = StringToArray(Version);
     
-    SystemInfo = Новый SystemInfo;
+    SystemInfo = New SystemInfo;
     CurrentVersion = SystemInfo.AppVersion;    
     CurrentVersionDigits = StringToArray(CurrentVersion);
 
@@ -916,11 +913,7 @@ EndProcedure
 Function FillParametersAtServer(QueryText)
     
     Query = New Query(QueryText);
-    Try
-        QueryParams = Query.FindParameters();
-    Except
-        Return ErrorDescription();
-    EndTry;
+    QueryParams = Query.FindParameters();
     
     Params = New Structure;
     For each Param In QueryParams Do

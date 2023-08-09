@@ -223,6 +223,71 @@
           <placementArea>UserCmds</placementArea>
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
+        <items xsi:type="form:FormGroup">
+          <name>QueryTreeGroupGlobalShortcuts</name>
+          <id>223</id>
+          <items xsi:type="form:Button">
+            <name>QueryTreeEditQuery</name>
+            <id>221</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryTreeEditQueryExtendedTooltip</name>
+              <id>222</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.EditQuery</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <title>
+            <key>en</key>
+            <value>Global shortcuts</value>
+          </title>
+          <title>
+            <key>ru</key>
+            <value>Глобальные горячие клавиши</value>
+          </title>
+          <extendedTooltip>
+            <name>QueryTreeGroupGlobalShortcutsExtendedTooltip</name>
+            <id>224</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <extInfo xsi:type="form:ButtonGroupExtInfo">
+            <commandSource>FormCommandPanelGlobalCommands</commandSource>
+          </extInfo>
+        </items>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
@@ -940,7 +1005,11 @@
             </userVisible>
             <title>
               <key>en</key>
-              <value>Query parameters group global shortcuts</value>
+              <value>Global shortcuts</value>
+            </title>
+            <title>
+              <key>ru</key>
+              <value>Глобальные горячие клавиши</value>
             </title>
             <extendedTooltip>
               <name>QueryParametersGroupGlobalShortcutsExtendedTooltip</name>
@@ -2171,6 +2240,7 @@
         <name>ParamFromStringInternal</name>
       </handler>
     </action>
+    <modifiesStoredData>true</modifiesStoredData>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
@@ -2200,6 +2270,7 @@
         <name>NewQueriesFile</name>
       </handler>
     </action>
+    <modifiesStoredData>true</modifiesStoredData>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
@@ -2229,6 +2300,7 @@
         <name>ParamsFromStringInternal</name>
       </handler>
     </action>
+    <modifiesStoredData>true</modifiesStoredData>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
