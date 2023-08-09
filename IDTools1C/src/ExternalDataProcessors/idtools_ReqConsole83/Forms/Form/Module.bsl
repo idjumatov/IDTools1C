@@ -5,6 +5,7 @@
 //*/
 
 // TODO: Реализовать программное копирование дерева из другого экземпляра https://infostart.ru/1c/articles/1357419/
+// TODO: Реализовать возможность комментирования и раскомментирования выделенного текста или текущей строки в тексте запроса
 
 // @strict-types
 //@skip-check module-region-empty
@@ -379,6 +380,10 @@ EndProcedure
 &AtClient
 Procedure EditQuery(Command)
     
+    If mQueryTreeRow = Undefined Then
+        Return;
+    EndIf;
+    
     #If NOT ThickClientManagedApplication Then
     If VersionIsLessThan("8.3.5.1068") Then
         ShowMessageBox(, Strings("КонструкторЗапросаНеПоддерживается"));
@@ -515,6 +520,60 @@ Function FromJSON(Val JSONString)
     JSONReader.Close();
     
     Return Data;
+    
+EndFunction
+
+&AtClientAtServerNoContext
+Function Strings(Val Key)
+    
+    Strings = New Map;
+    Strings.Вставить("НеРеализовано", "Не реализовано.");
+    Strings.Вставить("НеЗаполненТекстЗапроса", "Отсутствует текст запроса.");
+    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
+    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
+    Strings.Вставить("КонструкторЗапросаНеПоддерживается", "Текущая версия платформы 1С:Предприятие не поддерживает запуск конструктора запросов.");
+    
+    Text = Strings.Get(Key);
+    If Text <> Undefined Then 
+        Return Text;
+    EndIf;
+    
+    Return "";
+    
+EndFunction
+
+// Добавляет строки при копировании строки дерева запросов.
+// 
+// Parameters:
+//  Src - FormDataTree, FormDataTreeItem - Src
+//  Dst - FormDataTree, FormDataTreeItem, Undefined - Dst
+// 
+// Returns:
+//  Undefined, Number - Copy tree node
+//@skip-check property-return-type
+&AtClient
+Function CopyTreeNode(Src, Dst)
+    
+    If Dst = Undefined Then
+        Return Undefined;
+    EndIf;
+    
+    NewRow = Dst.GetItems().Add();
+//    FillPropertyValues(NewRow, Src);
+    NewRow.Name = Src.Name;
+    NewRow.Text = Src.Text;
+//    НоваяСтрока.Parameters = Src.Parameters;
+    
+    For each Row In Src.Parameters Do
+        Params = NewRow.Parameters; // FormDataCollection
+        NewParam = Params.Add();
+        FillPropertyValues(NewParam, Row);
+    EndDo;
+    For Each Item In Src.GetItems() Do
+        CopyTreeNode(Item, NewRow);
+    EndDo;
+    
+    Return NewRow.GetID();
     
 EndFunction
 
@@ -684,60 +743,6 @@ EndFunction
 &AtClientAtServerNoContext
 Function DefaultNodeName()
     Return "Запрос";
-EndFunction
-
-&AtClientAtServerNoContext
-Function Strings(Val Key)
-    
-    Strings = New Map;
-    Strings.Вставить("НеРеализовано", "Не реализовано.");
-    Strings.Вставить("НеЗаполненТекстЗапроса", "Отсутствует текст запроса.");
-    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
-    Strings.Вставить("НеВыбранЗапросВДереве", "Выберите запрос.");
-    Strings.Вставить("КонструкторЗапросаНеПоддерживается", "Текущая версия платформы 1С:Предприятие не поддерживает запуск конструктора запросов.");
-    
-    Text = Strings.Get(Key);
-    If Text <> Undefined Then 
-        Return Text;
-    EndIf;
-    
-    Return "";
-    
-EndFunction
-
-// Добавляет строки при копировании строки дерева запросов.
-// 
-// Parameters:
-//  Src - FormDataTree, FormDataTreeItem - Src
-//  Dst - FormDataTree, FormDataTreeItem, Undefined - Dst
-// 
-// Returns:
-//  Undefined, Number - Copy tree node
-//@skip-check property-return-type
-&AtClient
-Function CopyTreeNode(Src, Dst)
-    
-    If Dst = Undefined Then
-        Return Undefined;
-    EndIf;
-    
-    NewRow = Dst.GetItems().Add();
-//    FillPropertyValues(NewRow, Src);
-    NewRow.Name = Src.Name;
-    NewRow.Text = Src.Text;
-//    НоваяСтрока.Parameters = Src.Parameters;
-    
-    For each Row In Src.Parameters Do
-        Params = NewRow.Parameters; // FormDataCollection
-        NewParam = Params.Add();
-        FillPropertyValues(NewParam, Row);
-    EndDo;
-    For Each Item In Src.GetItems() Do
-        CopyTreeNode(Item, NewRow);
-    EndDo;
-    
-    Return NewRow.GetID();
-    
 EndFunction
 
 // After editing query.
